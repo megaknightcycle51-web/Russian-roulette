@@ -1,0 +1,1 @@
+# Kalkulator-Heat-Index
