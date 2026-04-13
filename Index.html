@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Russian Roulette</title>
+  <link rel="stylesheet" href="style.css" />
+  <!--
+    ════════════════════════════════════════
+    MUSIC SETUP — fill in your audio file
+    ════════════════════════════════════════
+    1. Place your audio file (mp3, ogg, wav) in the same folder as index.html
+    2. Replace "YOUR_MUSIC_FILE.mp3" with your actual filename
+    3. Music loops automatically and starts on first user interaction
+    4. Adjust volume below (0.0 = silent, 1.0 = full)
+    ════════════════════════════════════════
+  -->
+  <audio id="bg-music" loop preload="auto">
+    <source src="YOUR_MUSIC_FILE.mp3" type="audio/mpeg" />
+    <!-- Optional ogg fallback: <source src="YOUR_MUSIC_FILE.ogg" type="audio/ogg" /> -->
+  </audio>
+</head>
+<body>
+
+  <!-- SCREEN: START -->
+  <div id="screen-start" class="screen active">
+    <div class="start-bg-grid"></div>
+    <div class="start-content">
+      <div class="revolver-icon">
+        <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 45 L60 45 L60 35 L90 35 L100 40 L110 40 L110 50 L100 55 L60 55 L60 50 L10 50 Z" fill="#c8102e" />
+          <circle cx="48" cy="30" r="18" fill="#1a1a1a" stroke="#c8102e" stroke-width="2"/>
+          <circle cx="48" cy="30" r="12" fill="#0d0d0d" stroke="#333" stroke-width="1"/>
+          <circle cx="48" cy="22" r="3" fill="#c8102e" opacity="0.8"/>
+          <circle cx="54" cy="27" r="3" fill="#333" opacity="0.8"/>
+          <circle cx="54" cy="33" r="3" fill="#333" opacity="0.8"/>
+          <circle cx="48" cy="38" r="3" fill="#333" opacity="0.8"/>
+          <circle cx="42" cy="33" r="3" fill="#333" opacity="0.8"/>
+          <circle cx="42" cy="27" r="3" fill="#333" opacity="0.8"/>
+          <path d="M20 50 L25 65 L35 65 L40 50" fill="#222"/>
+          <rect x="100" y="42" width="10" height="6" rx="1" fill="#444"/>
+        </svg>
+      </div>
+      <h1 class="game-title">RUSSIAN<br/><span>ROULETTE</span></h1>
+      <p class="start-sub">A game of fate &amp; strategy</p>
+      <button id="btn-start" class="btn-primary pulse">BEGIN DUEL</button>
+      <div class="start-rules">
+        <p>1–5 live rounds. 6-chamber cylinder. Fight to the last HP.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: GAME -->
+  <div id="screen-game" class="screen">
+
+    <div class="game-layout">
+
+      <!-- TOP: HP BARS -->
+      <div class="hp-section">
+        <div class="player-hp" id="player-hp-block">
+          <span class="player-label">YOU</span>
+          <div class="hp-bar-wrap">
+            <div class="hp-bar" id="player-hp-bar"></div>
+          </div>
+          <span class="hp-num" id="player-hp-num">5</span>
+        </div>
+        <div class="round-badge" id="round-badge">ROUND 1</div>
+        <div class="player-hp enemy" id="enemy-hp-block">
+          <span class="hp-num" id="enemy-hp-num">5</span>
+          <div class="hp-bar-wrap">
+            <div class="hp-bar" id="enemy-hp-bar"></div>
+          </div>
+          <span class="player-label">CPU</span>
+        </div>
+      </div>
+
+      <!-- CYLINDER DISPLAY -->
+      <div class="cylinder-section">
+        <div class="cylinder-wrap">
+          <div class="cylinder" id="cylinder">
+            <div class="chamber-ring" id="chamber-ring">
+              <!-- chambers injected by JS -->
+            </div>
+            <div class="cylinder-center">
+              <div class="barrel-hole"></div>
+            </div>
+          </div>
+          <div class="cylinder-label" id="cylinder-label">6 rounds remaining</div>
+        </div>
+      </div>
+
+      <!-- STATUS / LOG -->
+      <div class="log-box" id="log-box">
+        <p id="log-text">The cylinder has been loaded. Choose your action.</p>
+      </div>
+
+      <!-- TURN INDICATOR -->
+      <div class="turn-banner" id="turn-banner">
+        <span id="turn-text">YOUR TURN</span>
+        <div class="turn-dot" id="turn-dot"></div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="actions-section" id="actions-section">
+        <button class="action-btn shoot-self" id="btn-shoot-self">
+          <span class="action-icon">&#9679;</span>
+          <span class="action-label">SHOOT SELF</span>
+        </button>
+        <button class="action-btn shoot-enemy" id="btn-shoot-enemy">
+          <span class="action-icon">&#10148;</span>
+          <span class="action-label">SHOOT CPU</span>
+        </button>
+      </div>
+
+      <!-- ITEMS SECTION -->
+      <div class="items-section">
+        <div class="items-half">
+          <div class="items-label">YOUR ITEMS</div>
+          <div class="items-grid" id="player-items"></div>
+        </div>
+        <div class="items-half">
+          <div class="items-label">CPU ITEMS</div>
+          <div class="items-grid" id="enemy-items"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SCREEN: GAME OVER -->
+  <div id="screen-over" class="screen">
+    <div class="over-content">
+      <div class="over-icon" id="over-icon"></div>
+      <h2 id="over-title">YOU DIED</h2>
+      <p id="over-sub">The cylinder did not favour you.</p>
+      <button id="btn-restart" class="btn-primary">PLAY AGAIN</button>
+    </div>
+  </div>
+
+  <!-- OVERLAY: item use popup -->
+  <div id="item-overlay" class="item-overlay hidden">
+    <div class="item-popup">
+      <div class="item-popup-icon" id="popup-icon"></div>
+      <div class="item-popup-name" id="popup-name"></div>
+      <div class="item-popup-desc" id="popup-desc"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <!-- Music controller -->
+  <script>
+    (function() {
+      const music = document.getElementById('bg-music');
+      music.volume = 0.5; // Change volume here (0.0 – 1.0)
+
+      // Browsers block autoplay until a user gesture — start on first click
+      function startMusic() {
+        music.play().catch(() => {}); // silently ignore if file not found yet
+        document.removeEventListener('click', startMusic);
+      }
+      document.addEventListener('click', startMusic);
+    })();
+  </script>
+</body>
+</html>
